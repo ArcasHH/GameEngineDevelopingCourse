@@ -1,6 +1,7 @@
 #pragma once
 
 #include <RenderEngine/export.h>
+#include <Math/Vector.h>
 
 namespace GameEngine::Render
 {
@@ -21,5 +22,9 @@ namespace GameEngine::Render
 	public:
 		std::shared_ptr<HAL::Mesh> m_mesh;
 		std::shared_ptr<HAL::Material> m_material;
+		Core::Math::Vector3f m_position{ Core::Math::Vector3f::Zero() };
+
+		void SetPosition(Core::Math::Vector3f position);
+		Core::Math::Vector3f GetPosition();
 	};
 }

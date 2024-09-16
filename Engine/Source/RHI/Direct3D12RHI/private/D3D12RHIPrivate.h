@@ -42,7 +42,7 @@ namespace GameEngine
 			
 			Material::Ptr GetMaterial(const std::string& name);
 
-			void Update(Mesh::Ptr mesh, Material::Ptr material);
+			void Update(Mesh::Ptr mesh, Material::Ptr material, Core::Math::Vector3f position, float dt);
 			void ExecuteCommandLists();
 			void FlushCommandQueue();
 			void OnResize();

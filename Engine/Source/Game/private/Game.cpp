@@ -1,5 +1,7 @@
 #include <Game.h>
 
+#include <chrono>
+
 namespace GameEngine
 {
 	Game::Game(
@@ -16,6 +18,7 @@ namespace GameEngine
 	{
 		assert(PlatformLoop != nullptr);
 
+		auto c_start = std::chrono::system_clock::now();
 		bool quit = false;
 		while (!quit)
 		{
@@ -24,7 +27,12 @@ namespace GameEngine
 
 			ProcessSystemParams();
 
-			m_renderEngine->Update();
+			auto c_end = std::chrono::system_clock::now();
+			auto diff = std::chrono::duration<float>(c_end - c_start);
+			float dt = diff.count();	
+			c_start = c_end;
+			
+			m_renderEngine->Update(dt);
 		}
 	}
 

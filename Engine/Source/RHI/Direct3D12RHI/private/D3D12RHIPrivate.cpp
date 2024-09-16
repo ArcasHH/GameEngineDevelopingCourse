@@ -28,7 +28,7 @@ namespace GameEngine
 			CreateDevice();
 			CreateFence();
 
-			D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
+			D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels{};
 			msQualityLevels.Format = m_BackBufferFormat;
 			msQualityLevels.SampleCount = 4;
 			msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
@@ -239,7 +239,7 @@ namespace GameEngine
 			if (m_Fence->GetCompletedValue() < m_CurrentFence)
 			{
 				HANDLE eventHandle = CreateEvent(nullptr, false, false, nullptr);
-
+				assert(eventHandle);
 				hr = m_Fence->SetEventOnCompletion(m_CurrentFence, eventHandle);
 				assert(SUCCEEDED(hr));
 
@@ -248,14 +248,14 @@ namespace GameEngine
 			}
 		}
 
-		void D3D12RHIPrivate::Update(Mesh::Ptr mesh, Material::Ptr material)
+		void D3D12RHIPrivate::Update(Mesh::Ptr mesh, Material::Ptr material, Core::Math::Vector3f position, float dt)
 		{
 			D3D12Mesh d3d12Mesh = *reinterpret_cast<D3D12Mesh*>(mesh.get());
 			D3D12Material d3d12Material = *reinterpret_cast<D3D12Material*>(material.get());
 
 			float mTheta = 1.5f * DirectX::XM_PI;
 			float mPhi = DirectX::XM_PIDIV4;
-			float mRadius = 5.0f;
+			float mRadius = 8.0f ;
 
 			// Convert Spherical to Cartesian coordinates.
 			float x = mRadius * sinf(mPhi) * cosf(mTheta);
@@ -272,6 +272,11 @@ namespace GameEngine
 			Math::Matrix4x4f proj = Core::Math::ProjectionMatrixLH(0.25f * DirectX::XM_PI, Core::MainWindowsApplication->GetAspectRatio(), 1.0f, 1000.0f);
 
 			Math::Matrix4x4f world = Math::Matrix4x4f::Identity();
+
+			world.SetElement(position.x, 3, 0);
+			world.SetElement(position.y, 3, 1);
+			world.SetElement(position.z, 3, 2);
+
 			Math::Matrix4x4f worldViewProj = world * view * proj;
 
 			ObjectConstants objConstants;

@@ -16,7 +16,8 @@ namespace GameEngine::Render
 	public:
 		RenderEngine();
 
-		void Update();
+		void Update(float dt);
+		void Move(RenderObject::Ptr rObject, float dt);
 		void OnResize(uint16_t width, uint16_t height);
 
 		inline uint16_t GetSwapChainWidth() const { return m_swapChainWidth; }
