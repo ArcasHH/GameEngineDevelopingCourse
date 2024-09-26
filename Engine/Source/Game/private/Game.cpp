@@ -48,6 +48,8 @@ namespace GameEngine
 
 	void Game::Update(float dt)
 	{
+		Core::g_MainCamera->Update(dt);
+		
 		for (int i = 0; i < m_Objects.size(); ++i)
 		{
 			Math::Vector3f pos = m_Objects[i]->GetPosition();
