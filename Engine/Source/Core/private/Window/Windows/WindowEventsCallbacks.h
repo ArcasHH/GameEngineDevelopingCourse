@@ -5,6 +5,8 @@
 #include <Window/IWindow.h>
 #include <Window.h>
 
+#include <Input.h>
+
 namespace GameEngine::Core
 {
     void OnMouseDown(WPARAM btnState, int x, int y, Window* window)
@@ -49,28 +51,33 @@ namespace GameEngine::Core
 
     inline void OnKeyPress(WPARAM btnState, Camera* camera, Window* window)
     {
-        SetCapture(GetPlatformWindowHandle(window->GetWindowHandle()));
+        const auto &Keys = getKeyboard();
+        auto Action = Keys.getAction(btnState);
+
         float speed = 0.1;
         auto forward = camera->GetViewDir();
         Math::Vector3f up = Math::Vector3f(0.0f, 1.0f, 0.0f);
         Math::Vector3f right = forward.CrossProduct(up).Normalized();
 
-        if (btnState == 0x57) //W
+        switch (Action)
         {
+        case ActionOnPressed::FORWARD:
             camera->SetSpeed(camera->GetSpeed() + forward * speed);
-        }
-        if (btnState == 0x53) //S
-        {
+            break;
+        case ActionOnPressed::BACKWARD:
             camera->SetSpeed(camera->GetSpeed() - forward * speed);
-        }
-        if (btnState == 0x41) //A
-        {
+            break;
+        case ActionOnPressed::LEFT:
             camera->SetSpeed(camera->GetSpeed() + right * speed);
-        }
-        if (btnState == 0x44) //D
-        {
+            break;
+        case ActionOnPressed::RIGHT:
             camera->SetSpeed(camera->GetSpeed() - right * speed);
-
+            break;
+        case ActionOnPressed::UNKNOWN:
+            break;
+        default:
+            break;
         }
     }
 }
+

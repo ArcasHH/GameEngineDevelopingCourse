@@ -59,6 +59,7 @@ endif()
 
 target_link_libraries(Core PRIVATE
 	Math
+	Inih
 )
 
 target_precompile_headers(Core
