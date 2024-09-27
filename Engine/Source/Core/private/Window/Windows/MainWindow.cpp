@@ -47,6 +47,7 @@ namespace GameEngine::Core
 	void Window::Init(void* instance)
 	{
 		HINSTANCE hInstance = reinterpret_cast<HINSTANCE>(instance);
+		getKeyboard(); // Just to read config in init section, not during the game.
 
 		std::wstring windowName = L"Game";
 		std::wstring className = L"GameWindow";

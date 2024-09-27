@@ -51,11 +51,11 @@ namespace GameEngine::Core
 
     inline void OnKeyPress(WPARAM btnState, Camera* camera, Window* window)
     {
-        const auto &Keys = getKeyboard();
-        auto Action = Keys.getAction(btnState);
+        const Keyboard &Keys = getKeyboard();
+        ActionOnPressed Action = Keys.getAction(btnState);
 
         float speed = 0.1;
-        auto forward = camera->GetViewDir();
+        Math::Vector3f forward = camera->GetViewDir();
         Math::Vector3f up = Math::Vector3f(0.0f, 1.0f, 0.0f);
         Math::Vector3f right = forward.CrossProduct(up).Normalized();
 

@@ -55,8 +55,10 @@ namespace GameEngine::Core
     void Camera::Update(float dt)
     {
         float fading = 0.95f;
-		if (m_Speed.GetLength() > 1.f)
-			fading = 0.9f;
+        if (m_Speed.GetLength() > 1.f)
+        {
+            fading = 0.9f;
+        }
 		m_Position = m_Position + m_Speed;
         m_Speed = m_Speed * fading;
     }
