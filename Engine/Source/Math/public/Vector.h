@@ -190,4 +190,14 @@ namespace GameEngine
 		using Vector4f = Vector4<float>;
 		using Vector4i = Vector4<int>;
 	}
+	inline Math::Vector3f GetRandVec(float radius)
+	{
+		float phi = float(std::rand() % 360) / (2.f * 3.1415f);
+		float theta = float(std::rand() % 360) / (2.f * 3.1415f);
+
+		float x = radius * std::cos(phi) * std::sin(theta);
+		float y = radius * std::sin(phi) * std::sin(theta);
+		float z = radius * std::cos(theta);
+		return Math::Vector3f(x, y, z);
+	}
 }

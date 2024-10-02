@@ -12,36 +12,58 @@ namespace GameEngine
 		PlatformLoop(PlatformLoopFunc)
 	{
 		Core::g_MainCamera = new Core::Camera();
-		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 6.0f, -6.0f));
-		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, -6.0f, 6.0f).Normalized());
+		Core::g_MainCamera->SetPosition(Math::Vector3f(0.0f, 0.0f, -50.0f));
+		Core::g_MainCamera->SetViewDir(Math::Vector3f(0.0f, 0.0f, 1.0f).Normalized());
 
 		m_renderThread = std::make_unique<Render::RenderThread>();
+		std::srand(std::time(0));
 
+		std::shared_ptr<PhysicController> phys_ctr = std::make_shared<PhysicController>(); // for jumping objects
+		std::shared_ptr<KeyboardContoller> keyboard_ctr = std::make_shared<KeyboardContoller>(); // for objects with keyboard controll
+		std::shared_ptr<MovingController> move_ctr = std::make_shared<MovingController>(); // for moving forward-backward objects
+		
 		// How many objects do we want to create
-		for (int i = 0; i < 10; ++i)
+		for (int i = 0; i < 100; ++i) 
 		{
 			int rand_object = std::rand() % 3;
+			GameObject* a{};
+
 			if (rand_object == 0)
 			{
-				m_Objects.push_back(new PhysicObject(Math::Vector3f(0.0f, -0.001f * float(i+1), 0.f)));
+				a = new GameObject(phys_ctr);
 			}
 			else if (rand_object == 1)
 			{
-				m_Objects.push_back(new MovingObject(Math::Vector3f(float(i), 0.f, float(i*4))));
+				a = new GameObject(keyboard_ctr);
 			}
 			else
 			{
-				m_Objects.push_back(new PlayableObject());
+				a = new GameObject(move_ctr); 
 			}
-			m_Objects.back()->SetPosition(Math::Vector3f(rand_object * i , rand_object + i, i*i), 0); // object position
-			Render::RenderObject** renderObject = m_Objects.back()->GetRenderObjectRef();
+			// object position
+			float rand_radius = float(std::rand() % 50 + 5);
+			a->SetPosition(GetRandVec(rand_radius), 0);
+
+			m_Objects.push_back(a);
+			Render::RenderObject** renderObject = a->GetRenderObjectRef();
 			m_renderThread->EnqueueCommand(Render::ERC::CreateRenderObject, RenderCore::DefaultGeometry::Cube(), renderObject);
 		}
-
+		
 		Core::g_InputHandler->RegisterCallback("GoForward", [&]() { Core::g_MainCamera->Move(Core::g_MainCamera->GetViewDir()); });
 		Core::g_InputHandler->RegisterCallback("GoBack", [&]() { Core::g_MainCamera->Move(-Core::g_MainCamera->GetViewDir()); });
 		Core::g_InputHandler->RegisterCallback("GoRight", [&]() { Core::g_MainCamera->Move(Core::g_MainCamera->GetRightDir()); });
 		Core::g_InputHandler->RegisterCallback("GoLeft", [&]() { Core::g_MainCamera->Move(-Core::g_MainCamera->GetRightDir()); });
+
+		Core::g_InputHandler->RegisterCallback("MoveRight", [keyboard_ctr](){
+				keyboard_ctr->UpdateAll([](GameObject* obj) { 
+					obj->SetSpeed(Math::Vector3f(50.f, 0.f, 0.f)); 
+					});
+			});
+		Core::g_InputHandler->RegisterCallback("MoveLeft", [keyboard_ctr]() { 
+				keyboard_ctr->UpdateAll([](GameObject* obj) { 
+					obj->SetSpeed(Math::Vector3f(-50.f, 0.f, 0.f));
+					});
+			});
 	}
 
 	void Game::Run()
@@ -71,9 +93,10 @@ namespace GameEngine
 
 	void Game::Update(float dt)
 	{
-		for (int i = 0; i < m_Objects.size(); ++i)
+		for (const auto& obj : m_Objects)
 		{
-			m_Objects[i]->Update(m_renderThread->GetMainFrame(), dt);
+			obj->Update(m_renderThread->GetMainFrame(), dt);
 		}
 	}
 }
+
