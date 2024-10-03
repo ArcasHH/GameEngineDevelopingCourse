@@ -3,6 +3,7 @@
 #include <Game.h>
 #include <GameObject.h>
 #include <Input/InputHandler.h>
+#include <array>
 
 namespace GameEngine
 {
@@ -21,25 +22,15 @@ namespace GameEngine
 		std::shared_ptr<PhysicController> phys_ctr = std::make_shared<PhysicController>(); // for jumping objects
 		std::shared_ptr<KeyboardContoller> keyboard_ctr = std::make_shared<KeyboardContoller>(); // for objects with keyboard controll
 		std::shared_ptr<MovingController> move_ctr = std::make_shared<MovingController>(); // for moving forward-backward objects
+
+		std::array<std::shared_ptr<ControllerInterface>, 3> AllControllers = { phys_ctr, keyboard_ctr, move_ctr };
 		
 		// How many objects do we want to create
 		for (int i = 0; i < 100; ++i) 
 		{
 			int rand_object = std::rand() % 3;
-			GameObject* a{};
+			GameObject* a = new GameObject(AllControllers[rand_object]);
 
-			if (rand_object == 0)
-			{
-				a = new GameObject(phys_ctr);
-			}
-			else if (rand_object == 1)
-			{
-				a = new GameObject(keyboard_ctr);
-			}
-			else
-			{
-				a = new GameObject(move_ctr); 
-			}
 			// object position
 			float rand_radius = float(std::rand() % 50 + 5);
 			a->SetPosition(GetRandVec(rand_radius), 0);
