@@ -3,7 +3,6 @@
 #include <Game.h>
 #include <GameObject.h>
 #include <Input/InputHandler.h>
-#include <array>
 
 namespace GameEngine
 {
@@ -23,7 +22,7 @@ namespace GameEngine
 		std::shared_ptr<KeyboardContoller> keyboard_ctr = std::make_shared<KeyboardContoller>(); // for objects with keyboard controll
 		std::shared_ptr<MovingController> move_ctr = std::make_shared<MovingController>(); // for moving forward-backward objects
 
-		std::array<std::shared_ptr<ControllerInterface>, 3> AllControllers = { phys_ctr, keyboard_ctr, move_ctr };
+		Core::array<std::shared_ptr<ControllerInterface>, 3> AllControllers = { phys_ctr, keyboard_ctr, move_ctr };
 		
 		// How many objects do we want to create
 		for (int i = 0; i < 100; ++i) 
