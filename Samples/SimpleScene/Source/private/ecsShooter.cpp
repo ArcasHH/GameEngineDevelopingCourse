@@ -1,26 +1,62 @@
 #include <ecsShooter.h>
 #include <ecsPhys.h>
-#include <ecsMesh.h>
+
 #include <flecs.h>
 
 void RegisterEcsShooterSystems(flecs::world& world)
 {
-   
-	world.system<const Position, const BouncePlane, DespawnOnBouncePlane, RenderObjectPtr>()
-        .each([&](flecs::entity e, const Position& pos, const BouncePlane& plane, DespawnOnBouncePlane& d, const RenderObjectPtr& renderObject) 
+
+	world.system< Gun>()
+		.each([&](flecs::entity e, Gun& gun)
+	{
+		if (gun.ammo == 0 && gun.reloaded)
+		{
+			gun.reloaded = false;
+		}
+		if (!gun.reloaded)
+		{
+			gun.timer += world.delta_time();
+			if (gun.timer > gun.reload_time)
+			{
+				gun.reloaded = true;
+				gun.ammo = gun.max_ammo;
+				gun.timer = 0.f;
+			}
+		}
+	});
+
+	world.system< Gun, FireRate>()
+		.each([&](flecs::entity e, Gun& gun, FireRate& fire)
+	{
+
+		if (gun.reloaded && fire.timer > fire.time_for_one_shot)
+		{
+			fire.can_shoot = true;
+			fire.timer = 0.f;
+		}
+		else
+		{
+			fire.can_shoot = false;
+			fire.timer += world.delta_time();
+		}
+	});
+
+
+	world.system<Position, Velocity, BouncePlane, DespawnOnBouncePlane>()
+        .each([&](flecs::entity e, const Position& pos, Velocity& vel, const BouncePlane& plane, DespawnOnBouncePlane& despawn) 
     {
-        constexpr float planeEpsilon = 0.1f;
-		if (plane.value.x * pos.value.x + plane.value.y * pos.value.y + plane.value.z * pos.value.z  < plane.value.w + planeEpsilon)
+        constexpr float planeEpsilon = 0.2f;
+		float dotPos = plane.value.x * pos.value.x + plane.value.y * pos.value.y + plane.value.z * pos.value.z;
+		if ((dotPos  < plane.value.w + planeEpsilon) && 
+			!despawn.collide_ground)
         {
-            d.timer = 0.f;
+			despawn.collide_ground = true;
+			vel.value = vel.value * 0.02;
+			despawn.timer = 0.f;
         }
-        else 
-        {
-            d.timer += world.delta_time();
-        }
-        if (d.timer > d.despawn_time) 
-        {
-            // Destroy here
-        }
+		if (despawn.collide_ground)
+		{
+			despawn.timer += world.delta_time();
+		}
     });
 }

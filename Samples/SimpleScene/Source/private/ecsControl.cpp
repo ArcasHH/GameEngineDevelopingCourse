@@ -52,30 +52,19 @@ void RegisterEcsControlSystems(flecs::world& world)
 		}
 	});
 
-	world.system< CameraPtr, const ControllerPtr, Gun>()
-		.each([&](flecs::entity e, const CameraPtr& camera, const ControllerPtr& controller, Gun& gun)
+	world.system< ControllerPtr, Gun, FireRate>()
+		.each([&](flecs::entity e, const ControllerPtr& controller, Gun& gun, FireRate& fire)
 	{
-		gun.timer += world.delta_time();
-
+		if (controller.ptr->IsPressed("Shot") && gun.reloaded && !gun.is_shoot && fire.can_shoot)
+		{
+			gun.is_shoot = true; // Create bullet
+			gun.ammo--;
+		}
+	
 		if (controller.ptr->IsPressed("Reload"))
 		{
 			// TODO: Reload on RMB
 		}
-		static int times = 0;
-		if (controller.ptr->IsPressed("Shot") && gun.reloaded)
-		{
-			times += controller.ptr->IsPressed("Shot");
-			gun.reloaded = false;
-			gun.timer = 0.f;
-			gun.is_shoot = true;
-
-		}
-	
-		if (gun.timer > gun.reload_time)
-		{
-			gun.reloaded = true;
-		}
-
 	});
 }
 

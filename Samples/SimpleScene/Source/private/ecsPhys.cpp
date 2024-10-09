@@ -54,6 +54,8 @@ void RegisterEcsPhysSystems(flecs::world& world)
 		vel.value.z -= vel.value.z * friction.value * world.delta_time();
 	});
 
+	
+
 
 	world.system<Position, const Velocity>()
 		.each([&](flecs::entity e, Position& pos, const Velocity& vel)

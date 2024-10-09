@@ -1,5 +1,6 @@
 #include <ecsMesh.h>
 #include <ecsPhys.h>
+#include <ecsShooter.h>
 #include <ECS/ecsSystems.h>
 #include <flecs.h>
 #include <Geometry.h>
@@ -23,6 +24,17 @@ void RegisterEcsMeshSystems(flecs::world& world)
 		.each([&](RenderObjectPtr& renderObject, const Position& position)
 	{
 		renderObject.ptr->SetPosition(position.value, renderThread->ptr->GetMainFrame());
+	});
+	
+	world.system< RenderObjectPtr, DespawnOnBouncePlane>()
+		.each([&](flecs::entity e, RenderObjectPtr& renderObject, DespawnOnBouncePlane& despawn)
+	{
+		if (despawn.timer < despawn.despawn_time)
+			return;
+		// despawn bullet
+		GameEngine::RenderCore::Geometry::Ptr fict_geom_ptr;
+		renderThread->ptr->EnqueueCommand(Render::ERC::DeleteRenderObject, fict_geom_ptr, renderObject.ptr);
+		e.destruct();	
 	});
 }
 
