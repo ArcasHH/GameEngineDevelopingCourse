@@ -13,6 +13,11 @@ struct Velocity
 	GameEngine::Math::Vector3f value;
 };
 
+struct Size
+{
+	GameEngine::Math::Vector3f value;
+};
+
 struct Gravity
 {
 	GameEngine::Math::Vector3f value;

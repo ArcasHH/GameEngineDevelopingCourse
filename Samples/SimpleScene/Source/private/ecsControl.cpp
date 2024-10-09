@@ -1,7 +1,11 @@
 #include <Camera.h>
 #include <ecsControl.h>
 #include <ECS/ecsSystems.h>
+
 #include <ecsPhys.h>
+#include <ecsMesh.h>
+#include <ecsShooter.h>
+
 #include <flecs.h>
 #include <Input/Controller.h>
 #include <Input/InputHandler.h>
@@ -46,6 +50,32 @@ void RegisterEcsControlSystems(flecs::world& world)
 				vel.value.y = jump.value;
 			}
 		}
+	});
+
+	world.system< CameraPtr, const ControllerPtr, Gun>()
+		.each([&](flecs::entity e, const CameraPtr& camera, const ControllerPtr& controller, Gun& gun)
+	{
+		gun.timer += world.delta_time();
+
+		if (controller.ptr->IsPressed("Reload"))
+		{
+			// TODO: Reload on RMB
+		}
+		static int times = 0;
+		if (controller.ptr->IsPressed("Shot") && gun.reloaded)
+		{
+			times += controller.ptr->IsPressed("Shot");
+			gun.reloaded = false;
+			gun.timer = 0.f;
+			gun.is_shoot = true;
+
+		}
+	
+		if (gun.timer > gun.reload_time)
+		{
+			gun.reloaded = true;
+		}
+
 	});
 }
 
