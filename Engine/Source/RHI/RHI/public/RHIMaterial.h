@@ -41,7 +41,10 @@ namespace GameEngine::Render
 
 			RenderCore::Color GetAlbedo() const
 			{
-				return m_Albedo;
+				int r = m_ID % 10;
+				float a = float(r) / 10.f;
+				return RenderCore::Color(a*0.9f, (1.f-a) * 0.9f + 0.1f, 0.1f, 1.f);
+				//return m_Albedo;
 			}
 
 		protected:

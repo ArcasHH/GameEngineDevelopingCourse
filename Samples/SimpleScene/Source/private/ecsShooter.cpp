@@ -28,15 +28,13 @@ void RegisterEcsShooterSystems(flecs::world& world)
 	world.system< Gun, FireRate>()
 		.each([&](flecs::entity e, Gun& gun, FireRate& fire)
 	{
-
-		if (gun.reloaded && fire.timer > fire.time_for_one_shot)
+		fire.can_shoot = gun.reloaded && fire.timer > fire.time_for_one_shot;
+		if (fire.can_shoot)
 		{
-			fire.can_shoot = true;
 			fire.timer = 0.f;
 		}
 		else
 		{
-			fire.can_shoot = false;
 			fire.timer += world.delta_time();
 		}
 	});
@@ -47,43 +45,48 @@ void RegisterEcsShooterSystems(flecs::world& world)
     {
         constexpr float planeEpsilon = 0.2f;
 		float dotPos = plane.value.x * pos.value.x + plane.value.y * pos.value.y + plane.value.z * pos.value.z;
-		if ((dotPos  < plane.value.w + planeEpsilon) && 
-			!despawn.collide_ground)
-        {
-			despawn.collide_ground = true;
-			vel.value = vel.value * 0.02;
-			despawn.timer = 0.f;
-        }
 		if (despawn.collide_ground)
 		{
 			despawn.timer += world.delta_time();
+		} 
+		else if (dotPos  < plane.value.w + planeEpsilon)
+		{
+			despawn.collide_ground = true;
+			vel.value = vel.value * 0.02;
+			despawn.timer = 0.f;
 		}
+
     });
 
-	world.system<Position, CollisionSize, Collision>()
-		.each([&](flecs::entity e1, Position& bullet_pos, CollisionSize bullet_size, Collision bullet_collision)
-	{
-		world.each([&](flecs::entity e2, Position& pos, const CollisionSize& size, Collision& collision)
-			{
-			if (e1.id() == e2.id())
-				return;
-			if (std::abs(bullet_pos.value.x - pos.value.x) > (bullet_size.value.x + size.value.x) ||
-				std::abs(bullet_pos.value.y - pos.value.y) > (bullet_size.value.y + size.value.y) ||
-				std::abs(bullet_pos.value.z - pos.value.z) > (bullet_size.value.z + size.value.z))
-				return;
-
-			bullet_collision.is_collide = true;
-			collision.is_collide = true;
-			collision.damage_received = bullet_collision.damage;
-			bullet_collision.damage_received = collision.damage;
-		});
-    });
+	
 
 	world.system<Collision, Health>()
-		.each([&](flecs::entity e, Collision collision, Health& health)
-		{
+		.each([&](Collision& collision, Health& health)
+	{
 		if (!collision.is_collide)
 			return;
 		health.curr_health -= collision.damage_received;
+		//collision.is_collide = false;
 	});
+
+	world.system<LootSystem>()
+		.each([&](flecs::entity e, LootSystem& _)
+	{
+		int bonus = 0;
+		e.world().filter<Collision, LootSystem>()
+			.each([&](Collision& collision, LootSystem& loot)
+		{
+			if (collision.is_collide && !loot.done)
+			{
+				bonus += loot.value;
+				loot.done = true;
+			}
+		});
+		e.world().filter<Gun>()
+			.each([&](Gun& gun)
+		{
+			gun.max_ammo += bonus;
+		});
+	});
+
 }

@@ -1,4 +1,5 @@
 #include <ecsPhys.h>
+#include <ecsShooter.h>
 #include <flecs.h>
 
 namespace
@@ -11,12 +12,13 @@ namespace
 
 void RegisterEcsPhysSystems(flecs::world& world)
 {
-	world.system<Velocity, const Gravity, BouncePlane*, Position*>()
+	world.system< Velocity, const Gravity, BouncePlane*, Position*>()
 		.each([&](flecs::entity e, Velocity& vel, const Gravity& grav, BouncePlane* plane, Position* pos)
 	{
 		if (plane && pos)
 		{
 			constexpr float planeEpsilon = 0.1f;
+
 			if (plane->value.x * pos->value.x + plane->value.y * pos->value.y + plane->value.z * pos->value.z < plane->value.w + planeEpsilon)
 			{
 				return;
@@ -54,8 +56,6 @@ void RegisterEcsPhysSystems(flecs::world& world)
 		vel.value.z -= vel.value.z * friction.value * world.delta_time();
 	});
 
-	
-
 
 	world.system<Position, const Velocity>()
 		.each([&](flecs::entity e, Position& pos, const Velocity& vel)
@@ -73,4 +73,22 @@ void RegisterEcsPhysSystems(flecs::world& world)
 		pos.value.y += rand_flt(-shiver.value, shiver.value);
 		pos.value.z += rand_flt(-shiver.value, shiver.value);
 	});
+
+	world.system<Position, CollisionSize, Collision, Bullet>()
+		.each([&](flecs::entity e1, Position& bullet_pos,const CollisionSize& bullet_size, Collision& bullet_collision, Bullet&_)
+	{
+		world.each([&](flecs::entity e2, Position& pos, const CollisionSize& size, Collision& collision)
+		{
+			if (e1.id() == e2.id())
+				return;
+			if (std::abs(bullet_pos.value.x - pos.value.x) > (bullet_size.value.x + size.value.x) ||
+				std::abs(bullet_pos.value.y - pos.value.y) > (bullet_size.value.y + size.value.y) ||
+				std::abs(bullet_pos.value.z - pos.value.z) > (bullet_size.value.z + size.value.z))
+				return;
+
+			bullet_collision.is_collide = true;
+			collision.is_collide = true;
+			collision.damage_received = bullet_collision.damage;
+		});
+    });
 }

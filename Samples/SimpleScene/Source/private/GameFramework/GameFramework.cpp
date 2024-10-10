@@ -1,7 +1,5 @@
-#pragma once
 #include <Camera.h>
 #include <DefaultGeometry.h>
-
 #include <ecsControl.h>
 #include <ecsMesh.h>
 #include <ecsPhys.h>
@@ -12,8 +10,6 @@
 #include <RenderObject.h>
 
 using namespace GameEngine;
-constexpr Math::Vector3f size1 = Math::Vector3f(2.f, 1.f, 1.f);
-constexpr Math::Vector3f size2 = Math::Vector3f(2.f, 5.f, 1.f);
 
 void GameFramework::Init()
 {
@@ -29,16 +25,18 @@ void GameFramework::Init()
 		.set(FrictionAmount{ 0.9f })
 		.set(JumpSpeed{ 10.f })
 		.set(Gravity{ Math::Vector3f(0.f, -9.8065f, 0.f) })
-		.set(BouncePlane{ Math::Vector4f(0.f, 1.f, 0.f, 5.f) })
+		.set(BouncePlane{ Math::Vector4f(0.f, 1.f, 0.f, 1.f) })
 		.set(Bounciness{ 0.3f })
-		.set(GeometryPtr{ RenderCore::DefaultGeometry::Cube(size1) })
+		.set(GeometryPtr{ RenderCore::DefaultGeometry::Cube()})
 		.set(RenderObjectPtr{ new Render::RenderObject() })
 		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) })
 		;
-
-	flecs::entity enemy = m_World.entity()
-		.set(Health{3.f,3.f})
-		.set(Position{ Math::Vector3f(2.f, 0.f, 0.f) })
+	for (int i = 0; i < 10; ++i)
+	{
+		flecs::entity enemy = m_World.entity()
+		.set(Health{1.f,3.f})
+		.set(LootSystem{2, false})
+		.set(Position{ Math::Vector3f(std::sin(float(i)) * 20.f , 5.f,  std::cos(float(i)) * 20.f )})
 		.set(Velocity{ Math::Vector3f(0.5f, 2.f, 0.f) })
 		.set(Gravity{ Math::Vector3f(0.f, -9.8065f, 0.f) })
 		.set(BouncePlane{ Math::Vector4f(0.f, 1.f, 0.f, 5.f) })
@@ -48,19 +46,19 @@ void GameFramework::Init()
 		.set(GeometryPtr{ RenderCore::DefaultGeometry::Cube(Math::Vector3f(2.f, 5.f, 1.f))})
 		.set(RenderObjectPtr{ new Render::RenderObject() })
 		;
+	}
 
 	flecs::entity camera = m_World.entity()
 		.set(Position{ Math::Vector3f(0.0f, 12.0f, -10.0f) })
 		.set(Speed{ 10.f })
 		.set(CameraPtr{ Core::g_MainCamera })
 		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) })
-		.set(Gun{ 0.f, 2.f,true, false, 2, 16})
-		.set(FireRate{0.f, .3f, true})
+		.set(Gun{ 0.f, 1.f,true, false, 6, 6})
+		.set(FireRate{0.f, .1f, true})
+		.set(LootSystem{0, false})
 		;
-}
 
-void GameFramework::Update(float dt)
-{
+
 	m_World.system<const Position, Gun>()
 		.each([&](const Position position, Gun& gun)
 	{
@@ -72,7 +70,7 @@ void GameFramework::Update(float dt)
 			.set(Velocity{ Core::g_MainCamera->GetViewDir().Normalized() * 200.f })
 			.set(FrictionAmount{ .8f })
 			.set(Gravity{ Math::Vector3f(0.f, -9.8065f, 0.f) })
-			.set(BouncePlane{ Math::Vector4f(0.f, 1.f, 0.f, 5.f) })
+			.set(BouncePlane{ Math::Vector4f(0.f, 1.f, 0.f, 0.1f) })
 			.set(Bounciness{ 1.f })
 			.set(DespawnOnBouncePlane{0.f, 5.f, false})
 			.set(CollisionSize{Math::Vector3f(0.1f, 0.1f, 0.1f)})
@@ -82,5 +80,10 @@ void GameFramework::Update(float dt)
 		});
 		gun.is_shoot = false;
 	});
+}
+
+void GameFramework::Update(float dt)
+{
+
 			
 }

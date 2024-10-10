@@ -35,6 +35,12 @@ struct Bullet
 	float damage;
 };
 
+struct LootSystem 
+{ 
+	int value;
+	bool done;
+};
+
 struct Health 
 { 
 	float curr_health;

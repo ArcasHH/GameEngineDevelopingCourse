@@ -11,8 +11,7 @@ using namespace GameEngine;
 
 void DeleteRenderObject(const EntitySystem::ECS::RenderThreadPtr* renderThread, RenderObjectPtr& renderObject)
 {
-	GameEngine::RenderCore::Geometry::Ptr fict_geom_ptr;
-	renderThread->ptr->EnqueueCommand(Render::ERC::DeleteRenderObject, fict_geom_ptr, renderObject.ptr);
+	renderThread->ptr->EnqueueCommand(Render::ERC::DeleteRenderObject, GameEngine::RenderCore::Geometry::Ptr{}, renderObject.ptr);
 }
 
 void RegisterEcsMeshSystems(flecs::world& world)

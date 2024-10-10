@@ -51,7 +51,7 @@ namespace GameEngine::Render
 		HAL::RHIMesh::ID meshID = HAL::RHIMesh::k_invalidMeshID;
 		HAL::RHIMaterial::ID materialID = HAL::RHIMaterial::k_invalidMaterialID;
 		m_rhi->CreateMesh(geometry, meshID, materialID);
-
+		
 		HAL::RenderData* renderData = new HAL::RenderData(meshID, materialID);
 		renderObject->SetRenderData(renderData);
 

@@ -56,9 +56,9 @@ namespace GameEngine
 
 			Geometry::Ptr Cube(  const Math::Vector3f size)
 			{
-				const float x = size.x / 2.f;
-				const float y = size.y / 2.f;
-				const float z = size.z / 2.f;
+				const float x = size.x;
+				const float y = size.y;
+				const float z = size.z;
 				const Core::array<Geometry::VertexType, 8> vertices =
 				{
 					Math::Vector3f(-x, -y, -z),
