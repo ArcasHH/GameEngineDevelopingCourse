@@ -13,7 +13,7 @@ struct Velocity
 	GameEngine::Math::Vector3f value;
 };
 
-struct Size
+struct CollisionSize
 {
 	GameEngine::Math::Vector3f value;
 };

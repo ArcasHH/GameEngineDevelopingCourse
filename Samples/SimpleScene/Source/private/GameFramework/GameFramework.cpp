@@ -36,13 +36,16 @@ void GameFramework::Init()
 		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) })
 		;
 
-	flecs::entity cubeMoving = m_World.entity()
+	flecs::entity enemy = m_World.entity()
+		.set(Health{3.f,3.f})
 		.set(Position{ Math::Vector3f(2.f, 0.f, 0.f) })
-		.set(Velocity{ Math::Vector3f(0.f, 2.f, 0.f) })
+		.set(Velocity{ Math::Vector3f(0.5f, 2.f, 0.f) })
 		.set(Gravity{ Math::Vector3f(0.f, -9.8065f, 0.f) })
 		.set(BouncePlane{ Math::Vector4f(0.f, 1.f, 0.f, 5.f) })
 		.set(Bounciness{ 1.f })
-		.set(GeometryPtr{ RenderCore::DefaultGeometry::Cube(size2) })
+		.set(CollisionSize{Math::Vector3f(2.f, 5.f, 1.f)})
+		.set(Collision{0.f, 0.f, false})
+		.set(GeometryPtr{ RenderCore::DefaultGeometry::Cube(Math::Vector3f(2.f, 5.f, 1.f))})
 		.set(RenderObjectPtr{ new Render::RenderObject() })
 		;
 
@@ -52,7 +55,7 @@ void GameFramework::Init()
 		.set(CameraPtr{ Core::g_MainCamera })
 		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) })
 		.set(Gun{ 0.f, 2.f,true, false, 2, 16})
-		.set(FireRate{0.f, .1f, true})
+		.set(FireRate{0.f, .3f, true})
 		;
 }
 
@@ -63,7 +66,8 @@ void GameFramework::Update(float dt)
 	{
 		if (!gun.is_shoot)
 			return;
-		m_World.entity()
+	m_World.entity()
+			.set(Bullet{ 1.f })
 			.set(Position{ position.value })
 			.set(Velocity{ Core::g_MainCamera->GetViewDir().Normalized() * 200.f })
 			.set(FrictionAmount{ .8f })
@@ -71,6 +75,8 @@ void GameFramework::Update(float dt)
 			.set(BouncePlane{ Math::Vector4f(0.f, 1.f, 0.f, 5.f) })
 			.set(Bounciness{ 1.f })
 			.set(DespawnOnBouncePlane{0.f, 5.f, false})
+			.set(CollisionSize{Math::Vector3f(0.1f, 0.1f, 0.1f)})
+			.set(Collision{ 1.f, 0.f, false })
 			.set(GeometryPtr{ RenderCore::DefaultGeometry::Cube(Math::Vector3f(0.1f, 0.1f, 0.1f)) })
 			.set(RenderObjectPtr{ new Render::RenderObject() 
 		});

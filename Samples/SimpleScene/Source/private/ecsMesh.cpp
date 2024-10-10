@@ -9,6 +9,12 @@
 
 using namespace GameEngine;
 
+void DeleteRenderObject(const EntitySystem::ECS::RenderThreadPtr* renderThread, RenderObjectPtr& renderObject)
+{
+	GameEngine::RenderCore::Geometry::Ptr fict_geom_ptr;
+	renderThread->ptr->EnqueueCommand(Render::ERC::DeleteRenderObject, fict_geom_ptr, renderObject.ptr);
+}
+
 void RegisterEcsMeshSystems(flecs::world& world)
 {
 	static const EntitySystem::ECS::RenderThreadPtr* renderThread = world.get<EntitySystem::ECS::RenderThreadPtr>();
@@ -26,16 +32,36 @@ void RegisterEcsMeshSystems(flecs::world& world)
 		renderObject.ptr->SetPosition(position.value, renderThread->ptr->GetMainFrame());
 	});
 	
+
 	world.system< RenderObjectPtr, DespawnOnBouncePlane>()
 		.each([&](flecs::entity e, RenderObjectPtr& renderObject, DespawnOnBouncePlane& despawn)
 	{
 		if (despawn.timer < despawn.despawn_time)
 			return;
-		// despawn bullet
-		GameEngine::RenderCore::Geometry::Ptr fict_geom_ptr;
-		renderThread->ptr->EnqueueCommand(Render::ERC::DeleteRenderObject, fict_geom_ptr, renderObject.ptr);
+		DeleteRenderObject(renderThread, renderObject);
 		e.destruct();	
 	});
+
+	world.system< RenderObjectPtr, Collision, Bullet>()
+		.each([&](flecs::entity e, RenderObjectPtr& renderObject, Collision& collision, Bullet& _)
+	{
+		if (!collision.is_collide )
+			return;
+		DeleteRenderObject(renderThread, renderObject);
+		e.destruct();	
+	});
+
+	world.system< RenderObjectPtr, Health>()
+		.each([&](flecs::entity e, RenderObjectPtr& renderObject, Health& health)
+	{
+		if (health.curr_health > 0.f)
+			return;
+		DeleteRenderObject(renderThread, renderObject);
+		e.destruct();	
+	});
+
 }
+
+
 
 

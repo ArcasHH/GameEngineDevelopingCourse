@@ -30,6 +30,22 @@ struct FireRate
 	bool can_shoot;
 };
 
+struct Bullet 
+{ 
+	float damage;
+};
 
+struct Health 
+{ 
+	float curr_health;
+	float max_health;
+};
+
+struct Collision 
+{ 
+	float damage;
+	float damage_received;
+	bool is_collide;
+};
 
 void RegisterEcsShooterSystems(flecs::world& world);
