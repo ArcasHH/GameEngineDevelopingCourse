@@ -40,7 +40,22 @@ void GameFramework::Init()
 		.set(BouncePlane{ 0.f, 1.f, 0.f, 5.f })
 		.set(Bounciness{ 1.f })
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
-		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() });
+		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
+		.set(Timer{ 0.f, 3.f })
+		.set(Visibility{true})
+		;
+
+	flecs::entity cubeMoving2 = m_World.entity()
+		.set(Position{ -4.f, 10.f, 2.f })
+		.set(Velocity{ 0.f, 3.f, 0.f })
+		.set(Gravity{ 0.f, -9.8065f, 0.f })
+		.set(BouncePlane{ 0.f, 1.f, 0.f, 5.f })
+		.set(Bounciness{ 1.f })
+		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
+		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
+		.set(Timer{ 0.f, 5.f })
+		.set(Visibility{true})
+		;
 
 	flecs::entity camera = m_World.entity()
 		.set(Position{ 0.0f, 12.0f, -10.0f })
@@ -60,6 +75,9 @@ void GameFramework::RegisterComponents()
 	ECS_META_COMPONENT(m_World, ShiverAmount);
 	ECS_META_COMPONENT(m_World, FrictionAmount);
 	ECS_META_COMPONENT(m_World, Speed);
+
+	ECS_META_COMPONENT(m_World, Timer);
+	ECS_META_COMPONENT(m_World, Visibility);
 }
 
 void GameFramework::RegisterSystems()
@@ -70,5 +88,4 @@ void GameFramework::RegisterSystems()
 
 void GameFramework::Update(float dt)
 {
-
 }

@@ -57,4 +57,13 @@ namespace GameEngine::Render
 
 		m_RenderObjects.push_back(renderObject);
 	}
+
+	void RenderEngine::DeleteRenderObject(RenderCore::Geometry::Ptr geometry, RenderObject* renderObject)
+	{
+		assert(renderObject);
+
+		std::vector<RenderObject*>::iterator it = std::find(m_RenderObjects.begin(), m_RenderObjects.end(), renderObject);
+		m_RenderObjects.erase(it);
+		delete renderObject;
+	}
 }

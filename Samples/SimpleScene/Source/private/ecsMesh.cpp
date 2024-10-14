@@ -17,6 +17,16 @@ void RegisterEcsMeshSystems(flecs::world& world)
 	{
 		renderObject.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z), renderThread->ptr->GetMainFrame());
 	});
+
+	world.system<EntitySystem::ECS::RenderObjectPtr, Visibility>()
+		.each([&](flecs::entity e, EntitySystem::ECS::RenderObjectPtr& renderObject, Visibility visibility)
+	{
+			if (!visibility.is_visible)
+			{
+				renderThread->ptr->EnqueueCommand(Render::ERC::DeleteRenderObject, GameEngine::RenderCore::Geometry::Ptr{}, renderObject.ptr);	
+				e.destruct();
+			}
+	});
 }
 
 
