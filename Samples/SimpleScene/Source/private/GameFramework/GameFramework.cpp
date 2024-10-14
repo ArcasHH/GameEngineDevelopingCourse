@@ -31,30 +31,48 @@ void GameFramework::Init()
 		.set(Bounciness{ 0.3f })
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
-		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) });
+		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) })
+
+		.set(CollisionSize{1.f,1.f,1.f})
+		;
 
 	flecs::entity cubeMoving = m_World.entity()
 		.set(Position{ 2.f, 0.f, 0.f })
-		.set(Velocity{ 0.f, 3.f, 0.f })
+		.set(Velocity{ 0.f, 5.f, 0.f })
 		.set(Gravity{ 0.f, -9.8065f, 0.f })
 		.set(BouncePlane{ 0.f, 1.f, 0.f, 5.f })
 		.set(Bounciness{ 1.f })
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
-		.set(Timer{ 0.f, 3.f })
-		.set(Visibility{true})
+
+		.set(CollisionSize{1.f,1.f,1.f})
 		;
 
 	flecs::entity cubeMoving2 = m_World.entity()
-		.set(Position{ -4.f, 10.f, 2.f })
+		.set(Position{ 1.f, 10.f, 1.f })
 		.set(Velocity{ 0.f, 3.f, 0.f })
+		.set(Gravity{ 0.f, -9.8065f, 0.f })
+		.set(BouncePlane{ 0.f, 1.f, 0.f, 5.f })
+		.set(Bounciness{ 0.3f })
+		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
+		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
+
+		.set(Timer{ 0.f, 5.f })
+		.set(Visibility{true})
+		//if another components - collisions doesnt work ?????
+		.set(CollisionSize{1.f,1.f,1.f})
+		;
+
+	flecs::entity cubeMoving3 = m_World.entity()
+		.set(Position{ 2.f, 15.f, 0.f })
+		.set(Velocity{ 0.f, 0.f, 0.f })
 		.set(Gravity{ 0.f, -9.8065f, 0.f })
 		.set(BouncePlane{ 0.f, 1.f, 0.f, 5.f })
 		.set(Bounciness{ 1.f })
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
-		.set(Timer{ 0.f, 5.f })
-		.set(Visibility{true})
+
+		.set(CollisionSize{1.f,1.f,1.f})
 		;
 
 	flecs::entity camera = m_World.entity()
@@ -78,6 +96,8 @@ void GameFramework::RegisterComponents()
 
 	ECS_META_COMPONENT(m_World, Timer);
 	ECS_META_COMPONENT(m_World, Visibility);
+
+	ECS_META_COMPONENT(m_World, CollisionSize);
 }
 
 void GameFramework::RegisterSystems()

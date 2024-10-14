@@ -58,14 +58,16 @@ ECS_STRUCT(Speed,
 	float value;
 });
 
+
 ECS_STRUCT(Timer,
 {
 	float timer;
 	float max_time;
 });
 
-ECS_STRUCT(Visible,
+ECS_STRUCT(CollisionSize,
 {
-	bool is_visible;
+	float x;
+	float y;
+	float z;
 });
-
