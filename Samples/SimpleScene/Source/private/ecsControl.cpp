@@ -2,6 +2,7 @@
 #include <ecsControl.h>
 #include <ECS/ecsSystems.h>
 #include <ecsPhys.h>
+#include <ecsShooter.h>
 #include <flecs.h>
 #include <Input/Controller.h>
 #include <Input/InputHandler.h>
@@ -48,6 +49,17 @@ void RegisterEcsControlSystems(flecs::world& world)
 				vel.y = jump.value;
 			}
 		}
+	});
+
+	world.system< Shot, const ControllerPtr>()
+		.each([&](flecs::entity e,  Shot& gun, const ControllerPtr& controller)
+	{
+		if (controller.ptr->IsPressed("Shot") && gun.timer > gun.interval)
+		{
+			gun.value = true;
+			gun.timer = 0.f;
+		}
+		gun.timer += world.delta_time();
 	});
 }
 

@@ -57,17 +57,3 @@ ECS_STRUCT(Speed,
 {
 	float value;
 });
-
-
-ECS_STRUCT(Timer,
-{
-	float timer;
-	float max_time;
-});
-
-ECS_STRUCT(CollisionSize,
-{
-	float x;
-	float y;
-	float z;
-});
