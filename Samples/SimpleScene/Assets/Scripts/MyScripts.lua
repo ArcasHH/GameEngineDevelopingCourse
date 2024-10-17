@@ -12,18 +12,17 @@ local function timer(it)
 end
 
 local function collision_detection(it)
-    for pos1, vel1, size1, ent1 in ecs.each(it) do
-		for pos2, vel2, size2, ent2 in ecs.each(it) do
- 
-			if  ecs.get_alive(ent1) < ecs.get_alive(ent2) and
-                (math.abs(pos1.x - pos2.x) < size1.x + size2.x) and 
-                (math.abs(pos1.y - pos2.y) < size1.y + size2.y) and 
-                (math.abs(pos1.z - pos2.z) < size1.z + size2.z) then
-
-                vel1.x, vel2.x = vel2.x, vel1.x
-                vel1.y, vel2.y = vel2.y, vel1.y
-                vel1.z, vel2.z = vel2.z, vel1.z
+    local pos, vel, size = ecs.columns(it)
+	for i = 1, it.count - 1 do
+		for j = i + 1, it.count do
+            if  (math.abs(pos[i].x - pos[j].x) < size[i].x + size[j].x) and 
+                (math.abs(pos[i].y - pos[j].y) < size[i].y + size[j].y) and 
+                (math.abs(pos[i].z - pos[j].z) < size[i].z + size[j].z) then
+                vel[i].x, vel[j].x = vel[j].x, vel[i].x
+                vel[i].y, vel[j].y = vel[j].y, vel[i].y
+                vel[i].z, vel[j].z = vel[j].z, vel[i].z
             end
+            
 		end
 	end
 end

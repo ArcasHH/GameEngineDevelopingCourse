@@ -57,8 +57,8 @@ void GameFramework::Init()
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
 
-		.set(Timer{ 0.f, 5.f })
-		.set(Visibility{true})
+		//.set(Timer{ 0.f, 7.f })
+		//.set(Visibility{true})
 		//if another components - collisions doesnt work ?????
 		.set(CollisionSize{1.f,1.f,1.f})
 		;
