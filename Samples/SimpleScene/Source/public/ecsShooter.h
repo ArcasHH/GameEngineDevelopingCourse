@@ -18,6 +18,7 @@ ECS_STRUCT(Timer,
 {
 	float timer;
 	float max_time;
+	bool timer_on;
 });
 
 ECS_STRUCT(CollisionSize,
@@ -25,13 +26,8 @@ ECS_STRUCT(CollisionSize,
 	float x;
 	float y;
 	float z;
+	bool is_collide;
 });
-
-ECS_STRUCT(IsCollide,
-{
-	bool value;
-});
-
 
 ECS_STRUCT(ApplyForce,
 {
@@ -44,10 +40,11 @@ ECS_STRUCT(Shot,
 {
 	float timer;
 	float interval;
-	bool value;
+	bool on_shot;
 });
 
 ECS_STRUCT(Bullet,
 {
 	float damage;
+	bool is_bullet;
 });

@@ -56,7 +56,7 @@ void RegisterEcsControlSystems(flecs::world& world)
 	{
 		if (controller.ptr->IsPressed("Shot") && gun.timer > gun.interval)
 		{
-			gun.value = true;
+			gun.on_shot = true;
 			gun.timer = 0.f;
 		}
 		gun.timer += world.delta_time();

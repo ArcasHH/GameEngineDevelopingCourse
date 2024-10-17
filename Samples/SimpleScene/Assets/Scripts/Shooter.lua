@@ -1,48 +1,39 @@
 local ecs = require "ecs"
 
+local function getVel(m1, m2, v1, v2)
+    return ((m1-m2)*v1 + 2*m2*v2) / (m1+m2), ((m2-m1)*v2 + 2*m1*v1) / (m1+m2)
+end
+
 local function timer(it)
     for t, v, ent in ecs.each(it) do
-        if t.timer < t.max_time then
-			t.timer = t.timer + it.delta_time
-		else
-            t.timer = 0.0
-            v.is_visible = false
+        if t.timer_on then
+            if t.timer < t.max_time then
+			    t.timer = t.timer + it.delta_time
+		    else
+                t.timer = 0.0
+                v.is_visible = false
+            end
         end
     end
 end
 
 local function collision_detection(it)
-    for pos1, vel1, c1, size1, f1, ent1 in ecs.each(it) do
-		for pos2, vel2, c2, size2, f2, ent2 in ecs.each(it) do
- 
-			if  ecs.get_alive(ent1) < ecs.get_alive(ent2) and
-                (math.abs(pos1.x - pos2.x) < size1.x + size2.x) and 
-                (math.abs(pos1.y - pos2.y) < size1.y + size2.y) and 
-                (math.abs(pos1.z - pos2.z) < size1.z + size2.z) then
-
-                c1.value = true
-                c2.value = true
-                
-                f1.x, f2.x = vel2.x, vel1.x
-                f1.y, f2.y = vel2.y, vel1.y
-                f1.z, f2.z = vel2.z, vel1.z
+    local pos, vel, size, t = ecs.columns(it)
+	for i = 1, it.count - 1 do
+		for j = i + 1, it.count do
+            if  (math.abs(pos[i].x - pos[j].x) < size[i].x + size[j].x) and 
+                (math.abs(pos[i].y - pos[j].y) < size[i].y + size[j].y) and 
+                (math.abs(pos[i].z - pos[j].z) < size[i].z + size[j].z) then
+                vel[i].x, vel[j].x = vel[j].x, vel[i].x
+                vel[i].y, vel[j].y = vel[j].y, vel[i].y
+                vel[i].z, vel[j].z = vel[j].z, vel[i].z
+                --doesnt work
+                t[i].timer_on, t[j].timer_on = true, true
+                t[i].max_time, t[j].max_time = 1.0, 4.0
             end
 		end
 	end
 end
 
-local function collide(it)
-    for is_collide, vel, f, ent in ecs.each(it) do
-		if is_collide.value then
-            is_collide.value = false
-            vel.x = f.x
-            vel.y = f.y
-            vel.z = f.z
-        end
-	end
-end
-
-
 ecs.system(timer, "timer", ecs.OnUpdate, "Timer, Visibility")
-ecs.system(collision_detection, "collision_detection", ecs.OnUpdate, "Position, Velocity, IsCollide, CollisionSize, ApplyForce")
-ecs.system(collide, "collide", ecs.OnUpdate, "IsCollide, Velocity, ApplyForce")
+ecs.system(collision_detection, "collision_detection", ecs.OnUpdate, "Position, Velocity, CollisionSize, Timer")
