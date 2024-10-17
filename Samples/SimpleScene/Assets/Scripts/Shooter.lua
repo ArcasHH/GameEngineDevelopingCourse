@@ -18,22 +18,38 @@ local function timer(it)
 end
 
 local function collision_detection(it)
-    local pos, vel, size, t = ecs.columns(it)
-	for i = 1, it.count - 1 do
-		for j = i + 1, it.count do
-            if  (math.abs(pos[i].x - pos[j].x) < size[i].x + size[j].x) and 
-                (math.abs(pos[i].y - pos[j].y) < size[i].y + size[j].y) and 
-                (math.abs(pos[i].z - pos[j].z) < size[i].z + size[j].z) then
-                vel[i].x, vel[j].x = vel[j].x, vel[i].x
-                vel[i].y, vel[j].y = vel[j].y, vel[i].y
-                vel[i].z, vel[j].z = vel[j].z, vel[i].z
-                --doesnt work
-                t[i].timer_on, t[j].timer_on = true, true
-                t[i].max_time, t[j].max_time = 1.0, 4.0
+    for pos1, vel1, collision1, ent1 in ecs.each(it) do
+        for pos2, vel2, collision2, ent2 in ecs.each(it) do
+ 
+            if  ecs.get_alive(ent1) < ecs.get_alive(ent2) and
+                (math.abs(pos1.x - pos2.x) < collision1.x + collision2.x) and 
+                (math.abs(pos1.y - pos2.y) < collision1.y + collision2.y) and 
+                (math.abs(pos1.z - pos2.z) < collision1.z + collision2.z) then
+
+                local m1 = collision1.x * collision1.y * collision1.z
+                local m2 = collision2.x * collision2.y * collision2.z
+
+                vel1.x, vel2.x = getVel(m1, m2, vel1.x, vel2.x)
+                vel1.y, vel2.y = getVel(m1, m2, vel1.y, vel2.y)
+                vel1.z, vel2.z = getVel(m1, m2, vel1.z, vel2.z)
+
+                collision1.is_collide, collision2.is_collide = true, true
             end
-		end
-	end
+        end
+    end
+end
+
+local function hit(it)
+    for v, bullet, collision, ent in ecs.each(it) do
+        if collision.is_collide then
+            collision.is_collide = false
+            if bullet.is_bullet then
+                v.is_visible = false
+            end
+        end
+    end
 end
 
 ecs.system(timer, "timer", ecs.OnUpdate, "Timer, Visibility")
-ecs.system(collision_detection, "collision_detection", ecs.OnUpdate, "Position, Velocity, CollisionSize, Timer")
+ecs.system(collision_detection, "collision_detection", ecs.OnUpdate, "Position, Velocity, CollisionSize")
+ecs.system(hit, "hit", ecs.OnUpdate, "Visibility, Bullet, CollisionSize")

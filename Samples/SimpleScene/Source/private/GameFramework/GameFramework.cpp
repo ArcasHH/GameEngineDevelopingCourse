@@ -35,7 +35,7 @@ void GameFramework::Init()
 
 		.set(Timer{ 0.f, 7.f, true })
 		.set(Visibility{true})
-		//.set(CollisionSize{1.f,1.f,1.f})
+		//.set(CollisionSize{1.f,1.f,1.f, false})
 		;
 
 	flecs::entity cubeMoving = m_World.entity()
@@ -47,9 +47,10 @@ void GameFramework::Init()
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
 
-		.set(Timer{ 0.f, 5.f, false })
+		.set(Timer{ 0.f, 5.f, true })
 		.set(Visibility{true})
-		.set(CollisionSize{1.f,1.f,1.f})
+		.set(CollisionSize{1.f,1.f,1.f, false})
+		.set(Bullet{0.f, false})
 		;
 
 	flecs::entity cubeMoving2 = m_World.entity()
@@ -63,7 +64,8 @@ void GameFramework::Init()
 
 		.set(Timer{ 0.f, 5.f, false })
 		.set(Visibility{true})
-		.set(CollisionSize{1.f,1.f,1.f})
+		.set(CollisionSize{1.f,1.f,1.f, false})
+		.set(Bullet{0.f, false})
 		;
 
 	flecs::entity cubeMoving3 = m_World.entity()
@@ -75,9 +77,10 @@ void GameFramework::Init()
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
 
-		.set(Timer{ 0.f, 5.f, true })
+		.set(Timer{ 0.f, 5.f, false })
 		.set(Visibility{true})
-		.set(CollisionSize{1.f,1.f,1.f})
+		.set(CollisionSize{1.f,1.f,1.f, false})
+		.set(Bullet{0.f, false})
 		;
 
 	flecs::entity camera = m_World.entity()
@@ -85,7 +88,32 @@ void GameFramework::Init()
 		.set(Speed{ 10.f })
 		.set(CameraPtr{ Core::g_MainCamera })
 		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) })
+
+		.set(Shot{ 0.0f, .2f, false })
 		;
+
+	m_World.system<const Position, Shot>()
+		.each([&](const Position pos, Shot& gun)
+	{
+		if (!gun.on_shot)
+			return;
+		Math::Vector3f vel = Core::g_MainCamera->GetViewDir().Normalized() * 50.f;
+		m_World.entity()
+			.set(Position{ pos.x, pos.y, pos.z  })
+			.set(Velocity{ vel.x, vel.y, vel.z })
+			.set(Gravity{ 0.f, -9.8065f, 0.f })
+			.set(BouncePlane{ 0.f, 1.f, 0.f, 0.1f })
+			.set(Bounciness{ 1.f })
+			.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube(0.1f, 0.1f, 0.1f) })
+			.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
+
+			.set(Timer{ 0.f, 5.f, true })
+			.set(Visibility{true})
+			.set(CollisionSize{0.1f, 0.1f, 0.1f, false})
+			.set(Bullet{1.f, true})
+		;
+		gun.on_shot = false;
+	});
 }
 void GameFramework::RegisterComponents()
 {
@@ -101,8 +129,9 @@ void GameFramework::RegisterComponents()
 
 	ECS_META_COMPONENT(m_World, Timer);
 	ECS_META_COMPONENT(m_World, Visibility);
-
 	ECS_META_COMPONENT(m_World, CollisionSize);
+	ECS_META_COMPONENT(m_World, Shot);
+	ECS_META_COMPONENT(m_World, Bullet);
 }
 
 
