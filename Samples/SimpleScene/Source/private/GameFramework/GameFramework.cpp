@@ -33,7 +33,9 @@ void GameFramework::Init()
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
 		.set(ControllerPtr{ new Core::Controller(Core::g_FileSystem->GetConfigPath("Input_default.ini")) })
 
-		.set(CollisionSize{1.f,1.f,1.f})
+		.set(Timer{ 0.f, 7.f, true })
+		.set(Visibility{true})
+		//.set(CollisionSize{1.f,1.f,1.f})
 		;
 
 	flecs::entity cubeMoving = m_World.entity()
@@ -45,6 +47,8 @@ void GameFramework::Init()
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
 
+		.set(Timer{ 0.f, 5.f, false })
+		.set(Visibility{true})
 		.set(CollisionSize{1.f,1.f,1.f})
 		;
 
@@ -57,9 +61,8 @@ void GameFramework::Init()
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
 
-		//.set(Timer{ 0.f, 7.f })
-		//.set(Visibility{true})
-		//if another components - collisions doesnt work ?????
+		.set(Timer{ 0.f, 5.f, false })
+		.set(Visibility{true})
 		.set(CollisionSize{1.f,1.f,1.f})
 		;
 
@@ -72,6 +75,8 @@ void GameFramework::Init()
 		.set(EntitySystem::ECS::GeometryPtr{ RenderCore::DefaultGeometry::Cube() })
 		.set(EntitySystem::ECS::RenderObjectPtr{ new Render::RenderObject() })
 
+		.set(Timer{ 0.f, 5.f, true })
+		.set(Visibility{true})
 		.set(CollisionSize{1.f,1.f,1.f})
 		;
 

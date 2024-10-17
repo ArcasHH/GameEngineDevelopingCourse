@@ -63,6 +63,7 @@ ECS_STRUCT(Timer,
 {
 	float timer;
 	float max_time;
+	bool timer_on;
 });
 
 ECS_STRUCT(CollisionSize,
