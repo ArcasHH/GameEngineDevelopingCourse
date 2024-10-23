@@ -3,6 +3,7 @@
 #include <ecsControl.h>
 #include <ecsMesh.h>
 #include <ecsPhys.h>
+#include <ecsMyLogic.h>
 #include <ECS/ecsSystems.h>
 #include <GameFramework/GameFramework.h>
 #include <Input/Controller.h>
@@ -71,6 +72,17 @@ void GameFramework::RegisterComponentsReflection()
 
 	m_World.component<JumpSpeed>()
 		.member<float>("value");
+
+	m_World.component<Timer>()
+		.member<float>("timer")
+		.member<float>("max_time")
+		.member<bool>("timer_on");
+
+	m_World.component<CollisionSize>()
+		.member<float>("x")
+		.member<float>("y")
+		.member<float>("z")
+		.member<bool>("collision_on");
 }
 
 void GameFramework::RegisterSystems()
