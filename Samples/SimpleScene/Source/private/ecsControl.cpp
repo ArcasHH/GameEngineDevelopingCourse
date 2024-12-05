@@ -6,6 +6,7 @@
 #include <Input/Controller.h>
 #include <Input/InputHandler.h>
 #include <Vector.h>
+#include <Quaternion.h>
 
 using namespace GameEngine;
 
@@ -47,6 +48,32 @@ void RegisterEcsControlSystems(flecs::world& world)
 			{
 				vel.y = jump.value;
 			}
+		}
+	});
+
+	//an example of using quaternions to move around (0,0,0)
+	world.system<Position, const ControllerPtr, onRotate>()
+		.each([&]( Position& pos, const ControllerPtr& controller, onRotate& rot)
+	{
+		static float timer;
+		if (controller.ptr->IsPressed("Rotate"))
+		{
+			rot.isRotate = true;
+			timer = 0.f;
+		}
+		if (rot.timer < timer && rot.isRotate)
+		{
+			rot.isRotate = false;
+			timer = 0.f;
+		}
+		if (rot.isRotate)
+		{
+			Math::Vector3f newPos(pos.x, pos.y, pos.z);
+			Math::RotateVec3(newPos, Math::Vector3f(0.f, 1.f, -1.f), rot.speed);
+			pos.x = newPos.x;
+			pos.y = newPos.y;
+			pos.z = newPos.z;
+			timer += world.delta_time();
 		}
 	});
 }

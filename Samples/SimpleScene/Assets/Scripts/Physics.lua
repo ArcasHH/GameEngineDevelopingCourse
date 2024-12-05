@@ -13,6 +13,15 @@ local function move(it)
     end
 end
 
+local function rotate(it)
+    for rot, angvel, ent in ecs.each(it) do
+		rot.x = rot.x + angvel.x * it.delta_time
+		rot.y = rot.y + angvel.y * it.delta_time
+		rot.z = rot.z + angvel.z * it.delta_time
+		rot.angle = rot.angle + angvel.speed * it.delta_time
+    end
+end
+
 local function gravity(it)
     for pos, vel, grav, plane, ent in ecs.each(it) do
         local planeEpsilon = 0.1
@@ -61,6 +70,7 @@ local function BounceSystem(it)
 end
 
 ecs.system(move, "Move", ecs.OnUpdate, "Position, Velocity")
+ecs.system(rotate, "Rotate", ecs.OnUpdate, "Rotation, AngularVelocity")
 ecs.system(gravity, "grav", ecs.OnUpdate, "Position, Velocity, Gravity, BouncePlane")
 ecs.system(FrictionSystem, "FrictionSystem", ecs.OnUpdate, "Velocity, FrictionAmount")
 ecs.system(ShiverSystem, "ShiverSystem", ecs.OnUpdate, "Position, ShiverAmount")

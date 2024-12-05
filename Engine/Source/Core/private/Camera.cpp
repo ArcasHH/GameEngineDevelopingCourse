@@ -13,11 +13,14 @@ namespace GameEngine::Core
 	{
 		Math::Vector3f right = GetRightDir();
 		Math::Vector3f up = m_ViewDir.CrossProduct(right).Normalized();
-
+#if 0 //without quaternions
 		Math::Matrix3x3f rotationMatrixX = Math::GetRotationMatrix(up, yaw);
 		Math::Matrix3x3f rotationMatrixY = Math::GetRotationMatrix(right, pitch);
-
 		m_ViewDir = rotationMatrixX * rotationMatrixY * m_ViewDir;
+# else //with quaternions
+		Math::RotateVec3(m_ViewDir, up, yaw);
+		Math::RotateVec3(m_ViewDir, right, pitch);
+#endif
 		m_ViewDir = m_ViewDir.Normalized();
 	}
 

@@ -166,12 +166,15 @@ namespace GameEngine::Render
 			Math::Matrix4x4f view = Core::g_MainCamera->GetViewMatrix();
 			Math::Matrix4x4f proj = Math::ProjectionMatrixLH(0.25f * Math::Constants::PI, Core::g_MainWindowsApplication->GetAspectRatio(), 1.0f, 1000.0f);
 
+			Math::RotQuaternionf rotation = renderObject->GetRotation(frame);
+			Math::Matrix4x4f transform = rotation.GetRotationMatrix();
+
 			Math::Vector3f position = renderObject->GetPosition(frame);
 			Math::Matrix4x4f world = Math::Matrix4x4f::Identity();
 			world.SetElement(position.x, 3, 0);
 			world.SetElement(position.y, 3, 1);
 			world.SetElement(position.z, 3, 2);
-			Math::Matrix4x4f worldViewProj = world * view * proj;
+			Math::Matrix4x4f worldViewProj = transform * world * view * proj;
 
 			ObjectConstants objConstants;
 			objConstants.WorldViewProj = worldViewProj.Transpose();
