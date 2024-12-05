@@ -56,25 +56,30 @@ namespace GameEngine
 			T y;
 			T z;
 
-			Vector3() = default;
+			constexpr Vector3() = default;
 
-			Vector3(const Vector3&) = default;
-			Vector3& operator=(const Vector3&) = default;
+			constexpr Vector3(const Vector3&) = default;
+			constexpr Vector3& operator=(const Vector3&) = default;
 
-			Vector3(Vector3&&) = default;
-			Vector3& operator=(Vector3&&) = default;
+			constexpr Vector3(Vector3&&) = default;
+			constexpr Vector3& operator=(Vector3&&) = default;
 
 			static inline consteval Vector3<T> Zero() noexcept { return Vector3<T>((T)0, (T)0, (T)0); }
 
 			explicit constexpr Vector3(T _x, T _y, T _z) noexcept : x(_x), y(_y), z(_z) {}
 			explicit constexpr Vector3(const T (&vector)[3]) noexcept : x(vector[0]), y(vector[1]), z(vector[2]) {}
 
-			inline float GetLength() const noexcept
+			inline constexpr T GetLengthSquared() const noexcept
 			{
-				return sqrtf(x * x + y * y + z * z);
+				return x * x + y * y + z * z;
 			}
 
-			inline Vector3<T> Normalized() const noexcept
+			inline constexpr T GetLength() const noexcept
+			{
+				return std::sqrt(GetLengthSquared());
+			}
+
+			inline constexpr Vector3<T> Normalized() const noexcept
 			{
 				float length = GetLength();
 				Vector3<T> result;
@@ -91,7 +96,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator+(const Vector3<T>& other) noexcept
+			inline constexpr Vector3<T> operator+(const Vector3<T>& other) const noexcept
 			{
 				Vector3<T> result;
 				result.x = x + other.x;
@@ -100,7 +105,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator-(const Vector3<T>& other) noexcept
+			inline constexpr Vector3<T> operator-(const Vector3<T>& other) const noexcept
 			{
 				Vector3<T> result;
 				result.x = x - other.x;
@@ -109,7 +114,7 @@ namespace GameEngine
 				return result;
 			}
 
-			inline Vector3<T> operator-() noexcept
+			inline constexpr Vector3<T> operator-() const noexcept
 			{
 				Vector3<T> result;
 				result.x = -x;
@@ -118,18 +123,18 @@ namespace GameEngine
 				return result;
 			}
 
-			inline float operator*(const Vector3<T>& other) const noexcept
+			inline constexpr float operator*(const Vector3<T>& other) const noexcept
 			{
 				return x * other.x + y * other.y + z * other.z;
 			}
 
-			inline Vector3<T> operator*(float scale) const noexcept
+			inline constexpr Vector3<T> operator*(float scale) const noexcept
 			{
 				return Vector3<T>(x * scale, y * scale, z * scale);
 			}
 
 			// We have left hand coordinate system, so use left hand to determine ther resulted vector
-			inline Vector3<T> CrossProduct(const Vector3<T>& other) const noexcept
+			inline constexpr Vector3<T> CrossProduct(const Vector3<T>& other) const noexcept
 			{
 				return Vector3<T>(
 					y * other.z - z * other.y,
@@ -137,7 +142,7 @@ namespace GameEngine
 					x * other.y - y * other.x);
 			}
 
-			inline bool operator!=(const Vector3<T>& other) const noexcept
+			inline constexpr bool operator!=(const Vector3<T>& other) const noexcept
 			{
 				return x != other.x || y != other.y || z != other.z;
 			}
