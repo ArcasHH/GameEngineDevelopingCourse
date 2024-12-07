@@ -28,6 +28,7 @@ struct onRotate
 {
 	bool isRotate;
 	float timer;
+	float max_time;
 	float speed;
 };
 

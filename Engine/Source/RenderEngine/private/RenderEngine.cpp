@@ -167,7 +167,7 @@ namespace GameEngine::Render
 			Math::Matrix4x4f proj = Math::ProjectionMatrixLH(0.25f * Math::Constants::PI, Core::g_MainWindowsApplication->GetAspectRatio(), 1.0f, 1000.0f);
 
 			Math::RotQuaternionf rotation = renderObject->GetRotation(frame);
-			Math::Matrix4x4f transform = rotation.GetRotationMatrix();
+			Math::Matrix4x4f transform = rotation.CreateRotationMatrix();
 
 			Math::Vector3f position = renderObject->GetPosition(frame);
 			Math::Matrix4x4f world = Math::Matrix4x4f::Identity();

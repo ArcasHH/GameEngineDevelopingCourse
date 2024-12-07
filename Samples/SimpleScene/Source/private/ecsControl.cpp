@@ -51,20 +51,19 @@ void RegisterEcsControlSystems(flecs::world& world)
 		}
 	});
 
-	//an example of using quaternions to move around (0,0,0)
+	//an example of using quaternions to move around 
 	world.system<Position, const ControllerPtr, onRotate>()
 		.each([&]( Position& pos, const ControllerPtr& controller, onRotate& rot)
 	{
-		static float timer;
 		if (controller.ptr->IsPressed("Rotate"))
 		{
 			rot.isRotate = true;
-			timer = 0.f;
+			rot.timer = 0.f;
 		}
-		if (rot.timer < timer && rot.isRotate)
+		if (rot.max_time < rot.timer && rot.isRotate)
 		{
 			rot.isRotate = false;
-			timer = 0.f;
+			rot.timer = 0.f;
 		}
 		if (rot.isRotate)
 		{
@@ -73,7 +72,7 @@ void RegisterEcsControlSystems(flecs::world& world)
 			pos.x = newPos.x;
 			pos.y = newPos.y;
 			pos.z = newPos.z;
-			timer += world.delta_time();
+			rot.timer += world.delta_time();
 		}
 	});
 }

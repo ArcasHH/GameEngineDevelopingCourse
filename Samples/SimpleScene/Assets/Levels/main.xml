@@ -12,7 +12,7 @@
 	GeometryPtr="Cube"/>
 	
    <entity Name="ControllableCube" 
-	onRotate ="0, 1.0, 0.1"
+	onRotate ="0, 0., 1.0, 0.1"
 	Position="-2.0,2.0,0.0" 
 	Rotation="0.0,0.0,0.0,1.0" 
 	Velocity="0.0,0.0,0.0" 
@@ -27,7 +27,7 @@
 	ControllerPtr="Input_default.ini"/>
 
 <entity Name="RotCube2" 
-	onRotate ="0, 3.0, 0.05"
+	onRotate ="0, 0., 3.0, 0.05"
 	Position="-4.0,2.0,0.0" 
 	Rotation="0.0,0.0,0.0,1.0" 
 	Velocity="0.0,0.0,0.0" 
@@ -36,7 +36,7 @@
 	ControllerPtr="Input_default.ini"/>
 
 <entity Name="RotCube3" 
-	onRotate ="0, 3.0, 0.03"
+	onRotate ="0, 0., 4.0, 0.04"
 	Position="-9.0,2.0,0.0" 
 	Rotation="0.0,0.0,0.0,0.0" 
 	Velocity="0.0,0.0,0.0" 
@@ -45,7 +45,7 @@
 	ControllerPtr="Input_default.ini"/>
 
 <entity Name="RotCube4" 
-	onRotate ="0, 3.0, 0.025"
+	onRotate ="0, 0., 5.0, 0.05"
 	Position="-16.0,8.0,0.0" 
 	Rotation="0.0,0.0,0.0,1.0" 
 	Velocity="0.0,0.0,0.0" 

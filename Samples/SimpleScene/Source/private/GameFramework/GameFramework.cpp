@@ -87,6 +87,7 @@ void GameFramework::RegisterComponentsReflection()
 	m_World.component<onRotate>()
 		.member<bool>("isRotate")
 		.member<float>("timer")
+		.member<float>("max_time")
 		.member<float>("speed");
 }
 

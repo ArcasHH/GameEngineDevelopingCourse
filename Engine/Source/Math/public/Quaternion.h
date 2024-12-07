@@ -4,8 +4,6 @@
 #include <Vector.h>
 #include <Matrix.h>
 
-#define PRECISION 1e-6f
-
 namespace GameEngine
 {
 	namespace Math
@@ -18,8 +16,8 @@ namespace GameEngine
 			T scalar{};			
 		public:
 			constexpr Quaternion() = default;
-			explicit constexpr Quaternion(const Vector3<T>& vector, T scalar = 0) : vec(vector), scalar(scalar) {};
-			explicit constexpr Quaternion(T x, T y, T z, T scalar = 0) : Quaternion(Vector3<T>(x, y, z), scalar) {};
+			explicit constexpr Quaternion(const Vector3<T>& vector, T scalar) : vec(vector), scalar(scalar) {};
+			explicit constexpr Quaternion(T x, T y, T z, T scalar) : Quaternion(Vector3<T>(x, y, z), scalar) {};
 
 			Quaternion(const Quaternion&) = default;
 			Quaternion& operator=(const Quaternion&) = default;
@@ -40,7 +38,7 @@ namespace GameEngine
 			}
 			constexpr Quaternion Inversed() const noexcept
 			{
-				assert(GetLengthSquared() > PRECISION);
+				assert(GetLengthSquared() > std::numeric_limits<T>::epsilon());
 				return Conjugated() / GetLengthSquared();
 			}
 
@@ -130,12 +128,12 @@ namespace GameEngine
 
 			constexpr Quaternion Normalized() const noexcept 
 			{
-				assert(GetLengthSquared() > PRECISION);
+				assert(GetLengthSquared() > std::numeric_limits<T>::epsilon());
 				return *this / GetLength();
 			}
 			constexpr bool IsNormalized() const noexcept 
 			{
-				return std::abs(GetLengthSquared() - 1) < PRECISION;
+				return std::abs(GetLength() - 1) < std::numeric_limits<T>::epsilon();
 			}
 
 			constexpr T dot(const Quaternion& other) const noexcept 
@@ -150,12 +148,12 @@ namespace GameEngine
 		public:
 			constexpr RotQuaternion() = default;
 			explicit constexpr RotQuaternion(const Vector3<T>& vector, T angle)
-				: Quaternion<T>(vector.Normalized() * std::sin(angle * 0.5), std::cos(angle*0.5))
+				: Quaternion<T>(vector.Normalized() * std::sin(angle * 0.5), std::cos(angle * 0.5))
 			{}
 			explicit constexpr RotQuaternion(Quaternion<T> other) : Quaternion<T>{ std::move(other) } {
 				assert(this->IsNormalized());
 			}
-			explicit constexpr RotQuaternion(const Vector3<T>& vector) : Quaternion<T>::Quaternion(vector.Normalized()) {};
+			explicit constexpr RotQuaternion(const Vector3<T>& vector) : Quaternion<T>::Quaternion(vector.Normalized(), 0) {};
 			explicit constexpr RotQuaternion(T x, T y, T z, T angle) : RotQuaternion(Vector3<T>(x, y, z), angle) {};
 			explicit constexpr RotQuaternion(T roll, T pitch, T yaw)
 			{
@@ -179,8 +177,9 @@ namespace GameEngine
 
 			constexpr Vector3<T> operator*(const Vector3<T>& vector) const noexcept
 			{
-				RotQuaternion v(vector);
-				return (*this * v * Inversed()).vec * vector.GetLength();
+				Quaternion<T> v(vector, 0);
+				const Quaternion<T>& this_quat = *this;
+				return (this_quat * v * Inversed()).GetVector();
 			}
 			constexpr RotQuaternion& operator*=(const RotQuaternion& other) noexcept 
 			{
@@ -192,7 +191,7 @@ namespace GameEngine
 				return RotQuaternion(Quaternion<T>::operator*(other));
 			}
 
-			constexpr Matrix<T, 4, 4> GetRotationMatrix() const noexcept
+			[[nodiscard]] constexpr Matrix<T, 4, 4> CreateRotationMatrix() const noexcept
 			{
 				Vector3f vec = this->vec;
 				T scalar = this->scalar;
@@ -214,7 +213,7 @@ namespace GameEngine
 				rotationMatrix.SetElement(xz2 + sy2, 2, 0);
 
 				rotationMatrix.SetElement(xy2 + sz2, 0, 1);
-				rotationMatrix.SetElement(1.0 - (xx2 + zz2), 1, 1);
+				rotationMatrix.SetElement(1 - (xx2 + zz2), 1, 1);
 				rotationMatrix.SetElement(yz2 - sx2, 2, 1);
 
 				rotationMatrix.SetElement(xz2 - sy2, 0, 2);
