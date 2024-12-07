@@ -35,10 +35,22 @@ void GameFramework::RegisterComponentsReflection()
 		.member<float>("y")
 		.member<float>("z");
 
+	m_World.component<Rotation>()
+		.member<float>("x")
+		.member<float>("y")
+		.member<float>("z")
+		.member<float>("angle");
+
 	m_World.component<Velocity>()
 		.member<float>("x")
 		.member<float>("y")
 		.member<float>("z");
+
+	m_World.component<AngularVelocity>()
+		.member<float>("x")
+		.member<float>("y")
+		.member<float>("z")
+		.member<float>("speed");
 
 	m_World.component<GeometryPtr>()
 		.member<uint64_t>("ptr");
@@ -71,6 +83,12 @@ void GameFramework::RegisterComponentsReflection()
 
 	m_World.component<JumpSpeed>()
 		.member<float>("value");
+
+	m_World.component<onRotate>()
+		.member<bool>("isRotate")
+		.member<float>("timer")
+		.member<float>("max_time")
+		.member<float>("speed");
 }
 
 void GameFramework::RegisterSystems()

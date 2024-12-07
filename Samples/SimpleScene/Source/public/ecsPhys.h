@@ -9,11 +9,27 @@ struct Position
 	float z;
 };
 
+struct Rotation
+{
+	float x;
+	float y;
+	float z;
+	float angle;
+};
+
 struct Velocity
 {
 	float x;
 	float y;
 	float z;
+};
+
+struct AngularVelocity
+{
+	float x;
+	float y;
+	float z;
+	float speed;
 };
 
 struct Gravity

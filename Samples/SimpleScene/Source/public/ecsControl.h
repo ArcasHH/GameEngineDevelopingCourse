@@ -1,6 +1,7 @@
 #pragma once
 
 #include <flecs.h>
+#include <Quaternion.h>
 
 namespace GameEngine::Core
 {
@@ -21,6 +22,14 @@ struct JumpSpeed
 struct CameraPtr
 {
 	GameEngine::Core::Camera* ptr;
+};
+
+struct onRotate
+{
+	bool isRotate;
+	float timer;
+	float max_time;
+	float speed;
 };
 
 void RegisterEcsControlSystems(flecs::world& world);

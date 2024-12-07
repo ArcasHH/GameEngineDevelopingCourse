@@ -20,4 +20,13 @@ void RegisterEcsMeshSystems(flecs::world& world)
 			renderObject.ptr->SetPosition(Math::Vector3f(position.x, position.y, position.z), renderThread->ptr->GetMainFrame());
 		}
 	});
+
+	world.system<EntitySystem::ECS::RenderObjectPtr, const Rotation>()
+		.each([&](EntitySystem::ECS::RenderObjectPtr& renderObject, const Rotation& rotation)
+	{
+		if (renderObject.ptr) [[likely]]
+		{
+			renderObject.ptr->SetRotation(Math::Vector3f(rotation.x, rotation.y, rotation.z), rotation.angle, renderThread->ptr->GetMainFrame());
+		}
+	});
 }
